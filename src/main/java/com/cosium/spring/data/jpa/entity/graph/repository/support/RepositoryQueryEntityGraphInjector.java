@@ -5,13 +5,14 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.ProxyFactory;
-import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Created on 24/11/16.
@@ -24,17 +25,15 @@ class RepositoryQueryEntityGraphInjector implements MethodInterceptor {
       LoggerFactory.getLogger(RepositoryQueryEntityGraphInjector.class);
 
   private static final List<String> EXECUTE_QUERY_METHODS =
-      Arrays.asList("getResultList", "getSingleResult");
+      Arrays.asList("getResultList", "getSingleResult", "scroll");
 
   private final EntityManager entityManager;
   private final EntityGraphBean entityGraphCandidate;
 
   private RepositoryQueryEntityGraphInjector(
       EntityManager entityManager, EntityGraphBean entityGraphCandidate) {
-    Assert.notNull(entityManager);
-    Assert.notNull(entityGraphCandidate);
-    this.entityManager = entityManager;
-    this.entityGraphCandidate = entityGraphCandidate;
+    this.entityManager = requireNonNull(entityManager);
+    this.entityGraphCandidate = requireNonNull(entityGraphCandidate);
   }
 
   static Query proxy(
